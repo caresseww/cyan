@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="青紫床旁指南">
+<meta name="theme-color" content="#152a66">
+<meta name="format-detection" content="telephone=no">
+<title>新生儿青紫 · 床旁分诊指南（住院医师版）</title>
+<style>
+  :root{
+    --bg:#e9edf4;
+    --card:#ffffff;
+    --ink:#1a2333;
+    --ink2:#4c5a72;
+    --ink3:#8a94a8;
+    --line:#dfe5ef;
+    --navy:#1f3f8f;
+    --navy-dark:#152a66;
+    --blue:#2456c4;
+    --blue-soft:#e8eefb;
+    --cyan:#0e7490;
+    --cyan-soft:#e2f2f6;
+    --purple:#6d4fae;
+    --purple-soft:#efe9f9;
+    --red:#cf4d3c;
+    --red-soft:#fbeae7;
+    --amber:#c9742c;
+    --amber-soft:#fbf0e4;
+    --green:#2e9e5b;
+    --green-soft:#e6f4eb;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue','Microsoft YaHei',sans-serif;
+    font-size:15px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px 80px;}
+
+  /* 顶栏：全宽渐变 hero + 固定翻页（同处方台家族） */
+  .stickyhead{position:sticky;top:0;z-index:60;background:var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.10);}
+  .stickyhead .headinner{max-width:820px;margin:0 auto;padding:0 20px;}
+  header.top{padding:8px 0 0;background:linear-gradient(135deg,#2b57c9 0%,#152a66 100%);}
+  .hero{
+    max-width:820px;margin:0 auto;padding:10px 0 9px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  }
+  .hero .t{display:flex;align-items:center;gap:10px;color:#fff;font-size:21px;font-weight:800;letter-spacing:1.5px;text-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .hero .logo{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.28);flex-shrink:0;}
+  .hero .badges{display:flex;align-items:center;gap:6px;}
+  .internal-badge{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#e0893a,#c9742c);border-radius:999px;padding:3px 11px;letter-spacing:2px;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap;}
+  .ver-badge{font-size:10px;color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:1px 10px;letter-spacing:1px;text-align:center;white-space:nowrap;}
+  .top-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;padding-bottom:9px;}
+  body[data-page]:not([data-page="1"]) .top-actions{display:none;}
+  .btn{
+    appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
+    padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;
+  }
+  .btn:hover{border-color:var(--blue);color:var(--blue);}
+  .btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .btn.primary:hover{background:#1c46a8;color:#fff;}
+  .btn.ghost-dark{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.4);}
+  .btn.ghost-dark:hover{background:rgba(255,255,255,.26);color:#fff;}
+
+  /* 翻页 */
+  nav.pager{
+    background:rgba(233,237,244,.96);backdrop-filter:blur(6px);padding:7px 0;
+    display:flex;gap:5px;border-bottom:1px solid var(--line);
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  nav.pager::-webkit-scrollbar{display:none;}
+  .pager-inner{max-width:820px;margin:0 auto;display:flex;gap:5px;width:100%;padding:0 20px;min-width:max-content;}
+  nav.pager .ptab{
+    flex:1;appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink2);
+    padding:8px 4px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  nav.pager .ptab.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  body.longmode nav.pager{display:none;}
+  body.longmode .stickyhead{position:static;}
+  body.longmode section.card.page{display:block !important;}
+  #exitLong{display:none;}
+  body.longmode #exitLong{display:flex;position:fixed;right:14px;bottom:14px;z-index:80;align-items:center;gap:6px;
+    background:var(--navy);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:600;
+    box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer;}
+  section.card.page{display:none;}
+  section.card.page.active{display:block;}
+
+  /* 卡片 */
+  section.card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 22px 24px;margin-bottom:18px;margin-top:14px;scroll-margin-top:118px;
+  }
+  .card-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;flex-wrap:wrap;}
+  .card-head .step-no{
+    font-family:var(--mono);font-size:12px;color:#fff;background:var(--navy);
+    border-radius:6px;padding:2px 7px;flex-shrink:0;
+  }
+  .card-head .step-no.red{background:var(--red);}
+  .card-head .step-no.cyan{background:var(--cyan);}
+  .card-head .step-no.purple{background:var(--purple);}
+  .card-head .step-no.amber{background:var(--amber);}
+  .card-head h2{font-size:17px;margin:0;}
+  .card-sub{color:var(--ink2);font-size:13px;margin:0 0 16px;padding-left:2px;}
+  .card h3{font-size:14.5px;margin:18px 0 8px;color:var(--ink);}
+  .card h3:first-child{margin-top:0;}
+
+  /* 输入 */
+  .grid{display:grid;gap:14px;}
+  .grid.c2{grid-template-columns:1fr 1fr;}
+  .grid.c3{grid-template-columns:1fr 1fr 1fr;}
+  label.fld{display:block;}
+  label.fld .lab{display:block;font-size:12.5px;color:var(--ink2);margin-bottom:5px;}
+  label.fld .lab .hint{color:var(--ink3);font-size:11px;margin-left:4px;}
+  .inp{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
+    font-size:15px;color:var(--ink);background:#fbfcfe;font-family:inherit;
+  }
+  .inp:focus{outline:none;border-color:var(--blue);background:#fff;}
+  select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8a94a8 50%),linear-gradient(135deg,#8a94a8 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px;}
+  .inp.mono{font-family:var(--mono);}
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+  input[type=number]{-moz-appearance:textfield;appearance:textfield;}
+  .res{
+    background:var(--blue-soft);border-radius:10px;padding:11px 14px;margin-top:12px;
+    font-family:var(--mono);font-size:13.5px;color:var(--navy);line-height:1.9;
+  }
+  .res b{font-size:16px;}
+  .note{font-size:12px;color:var(--ink3);margin-top:8px;line-height:1.7;}
+
+  /* 提示盒 */
+  .bluebox{background:var(--blue-soft);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:13.5px;}
+  .bluebox .t{font-weight:700;color:var(--blue);font-size:12.5px;margin-bottom:4px;letter-spacing:.5px;}
+  .redbox{background:var(--red-soft);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:13.5px;}
+  .redbox .t{font-weight:700;color:var(--red);font-size:12.5px;margin-bottom:4px;letter-spacing:.5px;}
+  .amberbox{background:var(--amber-soft);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:13.5px;}
+  .amberbox .t{font-weight:700;color:var(--amber);font-size:12.5px;margin-bottom:4px;letter-spacing:.5px;}
+  .purplebox{background:var(--purple-soft);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:13.5px;}
+  .purplebox .t{font-weight:700;color:var(--purple);font-size:12.5px;margin-bottom:4px;letter-spacing:.5px;}
+  .cyanbox{background:var(--cyan-soft);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:13.5px;}
+  .cyanbox .t{font-weight:700;color:var(--cyan);font-size:12.5px;margin-bottom:4px;letter-spacing:.5px;}
+  .box ul,.box ol{margin:4px 0 2px;padding-left:20px;}
+  .box li{margin:3px 0;}
+  .bluebox b,.redbox b,.amberbox b,.purplebox b,.cyanbox b{color:inherit;}
+
+  /* 表格 */
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0 4px;border:1px solid var(--line);border-radius:10px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:540px;background:#fff;}
+  table.slim{min-width:0;}
+  th{background:#eef2fa;color:var(--ink2);font-size:12px;font-weight:600;text-align:left;padding:8px 10px;white-space:nowrap;border-bottom:1px solid var(--line);}
+  td{padding:8px 10px;border-bottom:1px solid #edf0f6;vertical-align:top;line-height:1.55;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#fafbfe;}
+  td b{color:var(--ink);}
+  tr.dep-row td:first-child{border-left:3px solid var(--red);}
+  .tag{display:inline-block;font-size:10.5px;padding:1.5px 8px;border-radius:20px;font-weight:600;white-space:nowrap;vertical-align:1px;}
+  .tag.dep{background:var(--red-soft);color:var(--red);}
+  .tag.cyan{background:var(--cyan-soft);color:var(--cyan);}
+  .tag.blue{background:var(--blue-soft);color:var(--blue);}
+  .tag.purple{background:var(--purple-soft);color:var(--purple);}
+  .tag.amber{background:var(--amber-soft);color:var(--amber);}
+  .tag.green{background:var(--green-soft);color:var(--green);}
+  .tag.red{background:var(--red-soft);color:var(--red);}
+  .tag.grey{background:#eef1f6;color:var(--ink2);}
+
+  /* 三变量导航砖 */
+  .vargrid{display:grid;gap:10px;grid-template-columns:1fr;margin-top:12px;}
+  @media(min-width:640px){.vargrid{grid-template-columns:1fr 1fr 1fr;}}
+  .vartile{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;}
+  .vartile .vh{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+  .vartile .vq{font-size:12.5px;color:var(--ink2);line-height:1.6;}
+  .vartile.a .vh{color:var(--blue);} .vartile.a{background:linear-gradient(180deg,#f6f9ff,#fff);}
+  .vartile.b .vh{color:var(--cyan);} .vartile.b{background:linear-gradient(180deg,#f2fafc,#fff);}
+  .vartile.c .vh{color:var(--purple);} .vartile.c{background:linear-gradient(180deg,#f8f5fd,#fff);}
+
+  /* 红线条目 */
+  .redline{display:flex;gap:10px;align-items:flex-start;border:1px solid #f2d5cf;background:var(--red-soft);border-radius:12px;padding:11px 13px;margin-bottom:9px;font-size:13.5px;line-height:1.6;}
+  .redline .no{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .redline b{color:var(--red);}
+
+  /* 检查清单 */
+  .chk{list-style:none;margin:8px 0 0;padding:0;}
+  .chk li{
+    display:flex;gap:9px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed #e6eaf2;font-size:13.5px;line-height:1.55;
+  }
+  .chk li:last-child{border-bottom:none;}
+  .chk li::before{content:'☐';color:var(--blue);font-size:15px;flex-shrink:0;line-height:1.4;}
+  .chk li b{color:var(--ink);}
+
+  /* 时间轴 */
+  .tl{display:grid;gap:9px;}
+  .tlrow{display:flex;gap:10px;align-items:stretch;}
+  .tlrow .when{flex:0 0 92px;background:var(--navy);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;text-align:center;padding:8px 4px;line-height:1.4;}
+  .tlrow:nth-child(2) .when{background:#2f57b8;}
+  .tlrow:nth-child(3) .when{background:#4a6fc4;}
+  .tlrow:nth-child(4) .when{background:#6d87c9;}
+  .tlrow .what{flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px;line-height:1.6;}
+  .tlrow .what b{color:var(--navy);}
+
+  /* 判读器输出 */
+  .verdict{border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13.5px;line-height:1.7;display:none;}
+  .verdict.show{display:block;}
+  .verdict.v-red{background:var(--red-soft);}
+  .verdict.v-amber{background:var(--amber-soft);}
+  .verdict.v-green{background:var(--green-soft);}
+  .verdict.v-grey{background:#eef1f6;}
+  .verdict .vh{font-weight:800;font-size:14px;margin-bottom:3px;}
+  .verdict.v-red .vh{color:var(--red);}
+  .verdict.v-amber .vh{color:var(--amber);}
+  .verdict.v-green .vh{color:var(--green);}
+  .verdict.v-grey .vh{color:var(--ink2);}
+
+  /* 参考 */
+  .ref{margin-bottom:12px;font-size:13px;line-height:1.6;}
+  .ref .ref-t{font-weight:600;}
+  .ref .ref-src{color:var(--ink3);font-size:12px;}
+  a{color:var(--blue);}
+
+  footer.foot{margin-top:22px;padding:0 4px;color:var(--ink3);font-size:11.5px;line-height:1.8;}
+  hr.sep{border:none;border-top:1px dashed var(--line);margin:16px 0;}
+  .kbd{font-family:var(--mono);background:#eef1f6;border-radius:5px;padding:1px 6px;font-size:12.5px;color:var(--ink2);}
+  .big-red{color:var(--red);font-weight:800;}
+  .big-navy{color:var(--navy);font-weight:800;}
+
+  @media print{
+    .stickyhead{position:static;box-shadow:none;}
+    nav.pager,.top-actions,#exitLong{display:none !important;}
+    section.card.page{display:block !important;page-break-before:auto;}
+    section.card{page-break-inside:avoid;}
+    body{background:#fff;}
+  }
+</style>
+</head>
+<body data-page="1">
+
+<div class="stickyhead">
+  <div class="headinner">
+    <header class="top">
+      <div class="hero">
+        <div class="t"><span class="logo">青</span>新生儿青紫 · 床旁分诊指南</div>
+        <div class="badges">
+          <span class="internal-badge">内部学习使用</span>
+          <span class="ver-badge">住院医师版<br>v1.0</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn primary" onclick="toggleLong(true)">📱 长图模式（截图/分享用）</button>
+        <button class="btn" onclick="location.reload()">↻ 重置</button>
+      </div>
+    </header>
+    <nav class="pager">
+      <div class="pager-inner">
+        <button class="ptab active" onclick="goPage(1)">① 分诊四步</button>
+        <button class="ptab" onclick="goPage(2)">② 鉴别速查</button>
+        <button class="ptab" onclick="goPage(3)">③ 红线药物</button>
+        <button class="ptab" onclick="goPage(4)">④ 坑·原理</button>
+        <button class="ptab" onclick="goPage(5)">⑤ 依据</button>
+      </div>
+    </nav>
+  </div>
+</div>
+
+<button id="exitLong" onclick="toggleLong(false)">✕ 退出长图模式</button>
+
+<div class="wrap">
+
+<!-- ================= 页1 分诊四步 ================= -->
+<section class="card page active" id="page1">
+
+  <div class="card-head"><h2>🧭 核心心法：先分类，再分流，别等超声</h2></div>
+  <p class="card-sub">青紫的本质 = 毛细血管内<b>还原血红蛋白绝对量 ≥ 3–5 g/dL</b>。是绝对量不是比例——贫血儿可以不紫，红细胞增多儿特别容易紫。</p>
+  <div class="vargrid">
+    <div class="vartile a">
+      <div class="vh">变量① 吸氧后变不变</div>
+      <div class="vq">吸 100% 氧 SpO₂ / PaO₂ 明显升 → <b>肺源性</b>；怎么吸都不动 → <b>心源性分流 / MetHb</b></div>
+    </div>
+    <div class="vartile b">
+      <div class="vh">变量② 手脚差多少</div>
+      <div class="vq">导管前（右手）与导管后（足）差 <b>&gt;10%</b> → 导管水平右→左分流：<b>PPHN 或左心梗阻</b>（脚比手紫=缩窄/弓离断）</div>
+    </div>
+    <div class="vartile c">
+      <div class="vh">变量③ 呼吸窘不窘</div>
+      <div class="vq"><b>紫而呼吸费力</b> → 先想肺；<b>紫而呼吸平稳</b> → 心源（TGA 典型）、血源（MetHb）；吸气喉鸣 → 气道源</div>
+    </div>
+  </div>
+  <div class="redbox">
+    <div class="t">⚡ 一条铁律</div>
+    任何可疑<b>导管依赖型先心病</b>：<span class="big-red">PGE1 不等超声结果就上。</span>导管一闭就是病情急转直下的时刻。
+  </div>
+
+  <div class="card-head"><h2>第一步 · 看黏膜，定大类</h2></div>
+  <p class="card-sub">看舌、口咽黏膜、甲床——毛细血管丰富、血流慢处最明显，不是看脸。AHA 2025：中央性青紫看面部/躯干/黏膜；手足发绀出生时通常是正常的，不是低氧的可靠指标。</p>
+  <div class="tscroll"><table>
+    <thead><tr><th style="width:38%">观察</th><th>判断 → 下一步</th></tr></thead>
+    <tbody>
+      <tr><td>舌/口咽黏膜<b>不紫</b>，只有手脚紫</td><td><span class="tag grey">周围性</span> 保暖后复查 SpO₂；查 Hct、末梢灌注、体温、循环。生后头几天手足发绀多为良性。</td></tr>
+      <tr><td>舌/口咽黏膜<b>也紫</b></td><td><span class="tag red">中心性</span> 进入第二步——马上测双部位 SpO₂。</td></tr>
+    </tbody>
+  </table></div>
+  <div class="amberbox">
+    <div class="t">⚠️ 别被"周围性"骗到</div>
+    <b>休克的手脚紫不是良性手足发绀</b>：伴毛细血管再充盈 &gt;3 s、尿少、肢端凉、血压低 → 按休克处理（感染性 / 左心梗阻型先心病都可以长这样），别只"保暖观察"。
+  </div>
+
+  <div class="card-head"><h2>第二步 · 测双部位 SpO₂</h2></div>
+  <p class="card-sub"><b>右手（导管前）＋ 任一足（导管后）</b>；等读数稳定 1–2 分钟。顺手做：触双侧股动脉搏动、量四肢血压——股动脉弱 = 主动脉缩窄/弓离断信号。</p>
+  <div class="tscroll"><table>
+    <thead><tr><th style="width:36%">SpO₂ 表现</th><th>指向</th><th style="width:30%">立即行动</th></tr></thead>
+    <tbody>
+      <tr><td>任一部位 <b>&lt; 90%</b>，或手脚差 <b>&gt; 10%</b></td><td><span class="tag red">高危</span> CCHD 或 PPHN</td><td>床旁心超；<b>考虑 PGE1</b> 维持导管</td></tr>
+      <tr><td>手脚均 90–94%，无明显差</td><td><span class="tag amber">待分流</span> 肺源 vs 心源</td><td>做高氧试验</td></tr>
+      <tr><td>SpO₂ 卡在 <b>~85%</b> 怎么吸氧都不动，但血气 PaO₂ <b>正常</b></td><td><span class="tag purple">血液源</span> 高铁血红蛋白血症</td><td>血气加测 MetHb（co-oximetry）；亚甲蓝</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="bluebox">
+    <div class="t">🧮 双部位 SpO₂ 判读器（输入右手 / 足数值）</div>
+    <div class="grid c2">
+      <label class="fld"><span class="lab">右手 SpO₂ %<span class="hint">导管前</span></span><input class="inp mono" type="number" id="spHand" inputmode="decimal" placeholder="如 96"></label>
+      <label class="fld"><span class="lab">足 SpO₂ %<span class="hint">导管后</span></span><input class="inp mono" type="number" id="spFoot" inputmode="decimal" placeholder="如 93"></label>
+    </div>
+    <div class="verdict" id="spVerdict"></div>
+    <div class="note">判读口径 = CCHD 筛查共识（≥24h）：任一 &lt;90% 自动阳性；90–94% 或差 &gt;3% 为复查区（1 小时后复测）；均 ≥95% 且差 ≤3% 通过。<b>已出现症状的青紫患儿不走"复查"逻辑，直接进入下一步。</b></div>
+  </div>
+
+  <div class="card-head"><h2>第三步 · 高氧试验：分心源 vs 肺源</h2></div>
+  <p class="card-sub"><b>原理：</b>肺源性青紫，纯氧能让没病变的肺泡全部张开，PaO₂ 明显升高；心源性右向左分流时那部分静脉血根本不经过肺，吸纯氧也没用。</p>
+  <div class="cyanbox">
+    <div class="t">操作要点</div>
+    ① 吸空气时抽动脉血气（<b>右桡动脉最佳，导管前血</b>）→ ② 面罩或插管给 <b>100% 氧 10 分钟</b> → ③ 复抽动脉血气。试验期间持续监测，别让患儿脱氧变黑。
+  </div>
+  <div class="tscroll"><table>
+    <thead><tr><th style="width:34%">吸纯氧后 PaO₂</th><th>判断</th><th>常见病因</th></tr></thead>
+    <tbody>
+      <tr><td><b>&gt; 250 mmHg</b></td><td><span class="tag cyan">肺源性</span></td><td>RDS、肺炎、MAS、TTN、气胸、膈疝</td></tr>
+      <tr><td><b>≤ 50 mmHg</b></td><td><span class="tag red">心源性右向左分流</span></td><td>TGA、肺动脉闭锁、TAPVC 梗阻型、PPHN</td></tr>
+      <tr><td>50–250 mmHg</td><td><span class="tag amber">中间地带</span></td><td>PPHN、重症肺炎合并分流、梗阻型 TAPVC → 一律心超</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">口径为住院医师手册第六版（&lt;50 / 50–250 / &gt;250）。各文献切点有差异（如 &gt;150–250 支持肺源 / &lt;100 提示心源），<b>试验只是初筛工具，结果不典型或临床高危时不以它为准——直接心超。</b></div>
+
+  <div class="bluebox">
+    <div class="t">🧮 高氧试验判读器</div>
+    <div class="grid c2">
+      <label class="fld"><span class="lab">吸空气 PaO₂<span class="hint">可留空</span></span><input class="inp mono" type="number" id="hxPre" inputmode="decimal" placeholder="mmHg"></label>
+      <label class="fld"><span class="lab">100% 氧 10 min 后 PaO₂</span><input class="inp mono" type="number" id="hxPost" inputmode="decimal" placeholder="mmHg"></label>
+    </div>
+    <div class="verdict" id="hxVerdict"></div>
+  </div>
+
+  <div class="card-head"><h2>第四步 · 心超确诊 ＋ 等待期把准备工作做完</h2></div>
+  <p class="card-sub">床旁超声心动图是金标准：看解剖畸形、肺动脉压力（三尖瓣反流压差）、房/导管水平分流方向、心功能。等心超的这段时间不是干等——</p>
+  <div class="bluebox">
+    <div class="t">📋 青紫患儿 10 分钟动作清单</div>
+    <ul class="chk">
+      <li><b>保暖</b>（暖箱/辐射台），持续 SpO₂＋心电监护，记双部位读数</li>
+      <li><b>动脉血气＋血糖＋乳酸</b>（右桡动脉，导管前）；血常规＋Hct</li>
+      <li><b>建立静脉通路</b>（可疑导管依赖者这条通路就是给 PGE1 的）</li>
+      <li><b>胸片</b>（心影轮廓、肺血多少、是否胸腔肠袢/气胸）</li>
+      <li><b>四肢血压＋股动脉搏动</b>（上下肢差 = 缩窄/弓离断）</li>
+      <li><b>呼叫上级＋申请床旁心超</b>；说清"双部位 SpO₂、手脚差、血气、高氧试验结果"</li>
+      <li><b>备好 PGE1</b>（算好剂量泵速，见第③页）；疑感染先留培养、上抗菌药</li>
+      <li>呼吸暂停高危（&lt;34 周）上 PGE1 前<b>备好插管</b></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 页2 鉴别速查 ================= -->
+<section class="card page" id="page2">
+
+  <div class="card-head"><h2>⏱ 快导航：按起病时间猜疾病</h2></div>
+  <p class="card-sub">"什么时候开始紫"往往比"紫成什么样"更有提示力。先按时间轴锁定范围，再用三变量（吸氧/手脚差/呼吸）收窄。</p>
+  <div class="tl">
+    <div class="tlrow"><div class="when">生后即刻</div><div class="what"><b>MAS</b>（羊水粪染/过期产）· <b>气胸</b>（突发恶化）· <b>膈疝 CDH</b>（舟状腹）· <b>TGA</b>（即紫但呼吸平稳）· <b>肺动脉闭锁/重度狭窄</b> · 后鼻孔闭锁（安静紫、哭闹减）</div></div>
+    <div class="tlrow"><div class="when">数小时内</div><div class="what"><b>RDS</b>（早产儿呻吟）· <b>TTN</b>（剖宫产足月，≤6h，自限）· <b>肺炎/败血症</b>（反应差）· <b>PPHN</b>（低氧重胸片轻）</div></div>
+    <div class="tlrow"><div class="when">数天</div><div class="what"><b>导管依赖型闭合期</b>：HLHS/缩窄/弓离断 → 休克、股动脉弱；肺动脉闭锁 → 紫骤加重 · 败血症 · MetHb（接触氧化性药物/物质后）</div></div>
+    <div class="tlrow"><div class="when">数周</div><div class="what"><b>TOF</b>（渐紫＋喷射性杂音）· <b>梗阻型 TAPVC</b>（酷似重症肺炎但吸氧不升）· 心衰型（呼吸快＋肝大＋体重不增）</div></div>
+  </div>
+  <div class="purplebox">
+    <div class="t">🔑 两个"签名式"组合</div>
+    ① <b>紫得重＋呼吸平稳</b> → TGA、MetHb（都不费呼吸）；② <b>低氧很重＋胸片很轻（"黑肺"）</b> → PPHN 或梗阻型 TAPVC。
+  </div>
+
+  <hr class="sep">
+
+  <div class="card-head"><span class="step-no cyan">肺</span><h2>肺源性（吸氧后 SpO₂ 明显改善）</h2></div>
+  <div class="tscroll"><table>
+    <thead><tr><th>疾病</th><th>起病时间</th><th>病理生理要点</th><th>特征性表现</th><th>胸片</th></tr></thead>
+    <tbody>
+      <tr><td><b>RDS</b> 肺透明膜病</td><td>生后数小时</td><td>早产儿 PS 缺乏 → 肺泡萎陷 → 顺应性下降</td><td>早产儿、呻吟、三凹征；吸氧后明显改善</td><td>弥漫细颗粒、支气管充气征</td></tr>
+      <tr><td><b>TTN</b> 湿肺</td><td>生后 6h 内</td><td>肺液清除延迟 → 间质积液</td><td>足月/剖宫产，1 天内自行缓解</td><td>纹理粗、叶间裂积液</td></tr>
+      <tr><td><b>MAS</b> 胎粪吸入</td><td>生后即刻</td><td>胎粪阻塞＋化学性肺炎＋肺血管收缩 → 常合并 PPHN</td><td>过期产、羊水粪染、桶状胸</td><td>不均斑片、节段不张/气肿</td></tr>
+      <tr><td><b>肺炎/败血症</b></td><td>数小时–数天</td><td>炎性渗出＋内毒素 → 肺血管收缩 → PPHN</td><td>反应差、体温不稳、代酸</td><td>弥漫模糊影</td></tr>
+      <tr><td><b>气胸</b></td><td>即刻/上机中</td><td>胸膜腔积气压肺；张力性气胸压迫腔静脉</td><td>突发恶化、患侧呼吸音消失、心尖搏动移位</td><td>患侧透过度增高、肺压缩</td></tr>
+      <tr><td><b>膈疝 CDH</b></td><td>生后即刻</td><td>膈肌缺损 → 脏器入胸 → 肺发育不良＋PPHN</td><td>舟状腹、胸部肠鸣音、插入胃管见胸内胃</td><td>胸腔肠袢影</td></tr>
+      <tr><td><b>PPHN</b></td><td>生后 24h 内</td><td>肺血管阻力未降 → 卵圆孔/导管水平右→左分流</td><td><b>低氧重但胸片轻</b>；手脚 SpO₂ 差大；吸氧不缓解</td><td>原发病变或心影大；肺血少（"黑肺"）</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card-head"><span class="step-no red">心</span><h2>心源性 · 导管依赖型——导管一闭就垮</h2></div>
+  <p class="card-sub">这些患儿出生后必须靠动脉导管开放才能活：<b>右心梗阻型</b>靠导管供应肺血流，<b>左心梗阻型</b>靠导管供应全身血流。导管通常生后 24–48h 功能关闭——那就是崩溃时刻。<b>可疑病例不等超声，先上 PGE1。</b></p>
+  <div class="tscroll"><table>
+    <thead><tr><th>疾病</th><th>病理生理</th><th>什么时候恶化</th><th>特征性表现</th><th>胸片</th></tr></thead>
+    <tbody>
+      <tr class="dep-row"><td><b>TGA</b> 大动脉转位</td><td>主/肺动脉互换，体/肺循环并行；靠房水平＋导管水平混合供氧</td><td>导管闭合后急转直下</td><td>出生即严重紫但<b>呼吸不费力</b>；手脚 SpO₂ 差不多</td><td>"蛋形心"、肺血多</td></tr>
+      <tr class="dep-row"><td><b>肺动脉闭锁/重度狭窄</b></td><td>右室血进不了肺，肺血流全靠导管</td><td>导管闭合后骤变</td><td>紫、吸氧没用；杂音可很轻</td><td>肺血少、靴形心</td></tr>
+      <tr class="dep-row"><td><b>HLHS</b> 左心发育不良</td><td>左室发育极小，体循环全靠导管</td><td>导管闭合后休克</td><td>股动脉弱、肝大、代酸；早期可无杂音</td><td>心影大、肺淤血</td></tr>
+      <tr class="dep-row"><td><b>主动脉缩窄/弓离断</b></td><td>主动脉狭窄/中断，下半身血供靠导管</td><td>导管闭合后下肢休克</td><td><b>脚比手紫</b>；股动脉弱；上下肢血压差大</td><td>正常或心影大</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card-head"><span class="step-no red">心</span><h2>心源性 · 非导管依赖型发绀先心病</h2></div>
+  <div class="tscroll"><table>
+    <thead><tr><th>疾病</th><th>病理生理</th><th>特征性表现</th><th>胸片</th></tr></thead>
+    <tbody>
+      <tr><td><b>TOF</b> 法洛四联症</td><td>右室流出道梗阻＋室缺＋主动脉骑跨；分流量取决于梗阻程度</td><td>多在数周后渐紫；喷射性杂音；<b>缺氧发作</b>（哭闹时加重 → 膝胸位、吗啡、补容）</td><td>靴形心、肺血少</td></tr>
+      <tr><td><b>TAPVC 梗阻型</b></td><td>肺静脉异常回流＋梗阻 → 肺淤血</td><td>酷似重症肺炎但吸纯氧不升；iNO 疗效差甚至加重肺淤血，根本治疗是紧急外科</td><td>肺淤血/肺水肿</td></tr>
+      <tr><td><b>永存动脉干</b></td><td>单一大动脉骑跨室缺，混合血供</td><td>紫＋早期心衰；脉压宽</td><td>心影大、肺血多</td></tr>
+      <tr><td><b>三尖瓣闭锁</b></td><td>三尖瓣无开口，右室发育不良</td><td>心电图电轴左偏＋左室占优势</td><td>肺血少</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card-head"><span class="step-no purple">血</span><h2>血液源性（SpO₂ 低但 PaO₂ 正常）</h2></div>
+  <p class="card-sub">血氧分压其实不低，只是血红蛋白不能正常携氧——<b>SpO₂ ~85% 不动 ＋ PaO₂ 正常</b>是这条线的签名，最重要的鉴别点。</p>
+  <div class="tscroll"><table>
+    <thead><tr><th>疾病</th><th>病理生理</th><th>识别要点</th><th>治疗</th></tr></thead>
+    <tbody>
+      <tr class="dep-row"><td><b>高铁血红蛋白血症</b></td><td>Fe²⁺→Fe³⁺ 不能携氧；MetHb 呈棕褐色</td><td>紫得重但呼吸不费力；SpO₂ 卡 85% 不动；<b>静脉血巧克力色、接触空气不变红</b>；co-oximetry MetHb 升高</td><td>亚甲蓝 0.5–2 mg/kg 缓慢静推；<b>G6PD 缺乏禁用</b>（可用维生素 C）</td></tr>
+      <tr><td><b>红细胞增多症</b></td><td>Hct &gt;65%，血黏滞度高，微循环瘀滞</td><td>小胎龄/双胎输血/晚断脐；静脉血 Hct 证实；可伴青紫、喂养差、嗜睡</td><td>部分换血（Hct &gt;65% 伴症状；计算器见第③页）</td></tr>
+      <tr><td><b>Hb M 病</b></td><td>珠蛋白突变，持续高铁 Hb</td><td>家族史、持续青紫、吸氧无效</td><td>无需特殊治疗</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card-head"><span class="step-no amber">道</span><h2>气道源性（上呼吸道梗阻）</h2></div>
+  <div class="tscroll"><table>
+    <thead><tr><th>疾病</th><th>病理生理</th><th>识别要点</th></tr></thead>
+    <tbody>
+      <tr><td><b>后鼻孔闭锁</b></td><td>新生儿经鼻呼吸，鼻孔堵 = 上呼吸道梗阻</td><td><b>哭闹时紫减轻、安静时加重</b>；鼻导管插不进去（10F 胃管探鼻孔过不了）</td></tr>
+      <tr><td><b>Pierre Robin 序列征</b></td><td>小下颌＋舌后坠，仰卧时舌堵咽腔</td><td>小下巴、仰卧紫加重、<b>俯卧位缓解</b></td></tr>
+      <tr><td><b>喉软骨软化/声门下狭窄</b></td><td>吸气时声门上组织塌陷</td><td>吸气喉鸣、三凹征</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 页3 红线与药物 ================= -->
+<section class="card page" id="page3">
+
+  <div class="card-head"><span class="step-no red">红线</span><h2>红线：出现任何一条，立即心超 ＋ 备 PGE1</h2></div>
+  <p class="card-sub">不等超声结果。同时呼叫上级。</p>
+  <div class="redline"><div class="no">1</div><div>生后 <b>24h 内严重中心性青紫，吸氧无改善</b></div></div>
+  <div class="redline"><div class="no">2</div><div>手脚 SpO₂ 差 <b>&gt; 10%</b>（差异性青紫 → 导管水平右→左分流）</div></div>
+  <div class="redline"><div class="no">3</div><div><b>股动脉搏动弱/消失</b>，或上下肢血压差大（缩窄/弓离断信号）</div></div>
+  <div class="redline"><div class="no">4</div><div>不明原因<b>代谢性酸中毒 ＋ 休克 ＋ 肝大</b>（左心梗阻型先心的常见亮相方式，不一定先紫）</div></div>
+  <div class="redline"><div class="no">5</div><div>SpO₂ 测出来低但血气 <b>PaO₂ 正常</b> → 怀疑高铁 Hb 血症（走亚甲蓝路线）</div></div>
+
+  <div class="card-head"><span class="step-no red">PGE1</span><h2>PGE1（前列地尔）床旁计算器</h2></div>
+  <p class="card-sub">用法：持续静脉泵入，<b>维持动脉导管开放</b>。稳定患儿 0.01 μg/kg/min 起；循环崩溃可 0.05 起短时维持再降。副作用随剂量增加。</p>
+  <div class="grid c3">
+    <label class="fld"><span class="lab">体重 kg</span><input class="inp mono" type="number" id="pgW" inputmode="decimal" placeholder="如 3.2"></label>
+    <label class="fld"><span class="lab">剂量 μg/kg/min</span>
+      <select class="inp mono" id="pgRate">
+        <option value="0.01">0.01（常用起始）</option>
+        <option value="0.02">0.02</option>
+        <option value="0.03">0.03</option>
+        <option value="0.05">0.05（危重起始）</option>
+      </select></label>
+    <label class="fld"><span class="lab">药液浓度 μg/mL</span>
+      <select class="inp mono" id="pgConc">
+        <option value="0.1">0.1</option>
+        <option value="0.5">0.5</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+      </select></label>
+  </div>
+  <div class="res" id="pgRes">输入体重后自动计算</div>
+  <div class="note">① 浓度按本科室实际配制输入（药物 μg ÷ 液体 mL）；② 主要副作用：<b>呼吸暂停</b>（&lt;34 周/极低体重者备插管）、<b>发热</b>、潮红、<b>低血压</b>；③ 长期（&gt;2 周）使用注意胃幽门部增生样改变；④ 剂量变更须双人核对。</div>
+
+  <div class="card-head"><span class="step-no purple">MetHb</span><h2>亚甲蓝（高铁血红蛋白血症）</h2></div>
+  <div class="grid c2">
+    <label class="fld"><span class="lab">体重 kg</span><input class="inp mono" type="number" id="mbW" inputmode="decimal" placeholder="如 3.2"></label>
+    <label class="fld"><span class="lab">剂量 mg/kg<span class="hint">0.5–2，缓慢静推 5–10 min</span></span><input class="inp mono" type="number" id="mbDose" inputmode="decimal" value="1.5"></label>
+  </div>
+  <div class="res" id="mbRes">输入体重后自动计算</div>
+  <div class="note">按 1% 亚甲蓝 = 10 mg/mL 折算 mL。必要时可重复；<b>G6PD 缺乏禁用亚甲蓝</b>（可用维生素 C）；无效或重型考虑换血。用药前先确认 co-oximetry MetHb 结果或血"巧克力色不变红"。</div>
+
+  <div class="card-head"><span class="step-no purple">红细胞</span><h2>部分换血（红细胞增多症）计算器</h2></div>
+  <p class="card-sub">适应证：静脉 Hct <b>&gt;65% 且伴症状</b>（青紫、呼吸窘迫、喂养差、嗜睡、低血糖等）。抽出等量液体换出（生理盐水或 5% 白蛋白，按科室惯例）。</p>
+  <div class="grid c2">
+    <label class="fld"><span class="lab">体重 kg</span><input class="inp mono" type="number" id="btW" inputmode="decimal" placeholder="如 3.0"></label>
+    <label class="fld"><span class="lab">实测静脉 Hct %</span><input class="inp mono" type="number" id="btHct" inputmode="decimal" placeholder="如 70"></label>
+    <label class="fld"><span class="lab">目标 Hct %</span>
+      <select class="inp mono" id="btTarget"><option value="55">55</option><option value="58">58</option><option value="60">60</option></select></label>
+    <label class="fld"><span class="lab">血容量 ml/kg</span>
+      <select class="inp mono" id="btBV"><option value="80">80（足月）</option><option value="85" selected>85</option><option value="90">90（早产）</option><option value="100">100（极早产）</option></select></label>
+  </div>
+  <div class="res" id="btRes">输入体重与 Hct 后自动计算</div>
+  <div class="note">公式：换出量 = 血容量 × (Hct实测 − Hct目标) ÷ Hct实测。目标与血容量口径以手册/上级为准。</div>
+
+  <div class="card-head"><span class="step-no">☎️</span><h2>向上级/转运团队求助：30 秒说清（SBAR）</h2></div>
+  <div class="bluebox">
+    <div class="t">照着说</div>
+    <b>S</b>：_床，胎龄_周_天、日龄_天，__g，中心性青紫。<br>
+    <b>B</b>：产时__（羊水/窒息/剖宫产），起病时间__，疑__（肺源/心源/血源）。<br>
+    <b>A</b>：右手 SpO₂ _%、足 _%、差 _%；吸氧后 _%；高氧试验 PaO₂ _→_；血气 pH _/PaO₂ _/乳酸 _；股动脉搏动_。已给氧_、已开静脉_、PGE1 _。<br>
+    <b>R</b>：请心超/请示转运，是否先上 PGE1。
+  </div>
+</section>
+
+<!-- ================= 页4 坑与原理 ================= -->
+<section class="card page" id="page4">
+
+  <div class="card-head"><span class="step-no amber">坑</span><h2>高氧试验的四个坑</h2></div>
+  <div class="amberbox">
+    <ul>
+      <li><b>PPHN 会被误判为"心源"</b>：肺血管问题，但右向左分流发生在房/导管水平，吸纯氧 PaO₂ 也升不上去。鉴别线索：产前高危因素（窒息、胎粪、剖宫产无产程、母亲 NSAIDs/晚孕 SSRI）＋胸片相对轻＋高氧高通气试验可升。</li>
+      <li><b>梗阻型 TAPVC 会被误判且被耽误</b>：肺淤血重，心内分流不大 PaO₂ 也上不去，看起来"像心源"——它就是心源，但治疗不是药物，是紧急外科；iNO 疗效差甚至加重肺淤血。</li>
+      <li><b>重症肺病变会假性"心源"</b>：肺病变太重时没有分流 PaO₂ 也到不了 100+。结合胸片读结果。</li>
+      <li><b>它只是初筛</b>：不能代替超声心动图。结果不典型 → 一律心超。</li>
+    </ul>
+  </div>
+
+  <div class="card-head"><span class="step-no purple">原理</span><h2>为什么贫血儿不紫、红细胞多易紫</h2></div>
+  <div class="purplebox">
+    青紫看的是还原血红蛋白<b>绝对量</b>（≥3–5 g/dL），不是血氧饱和度的比例。Hb 8 g/dL 的贫血儿即使 SaO₂ 70%，还原 Hb 也才 ~2.4 g/dL，肉眼看不出紫，但组织缺氧照样重——<b>别用"不紫"判断氧合，一律信 SpO₂ 和血气</b>。反过来 Hct 70% 的增多症患儿，轻度低氧就还原 Hb 超标，特别容易显紫。肉眼识紫在深肤色、贫血儿身上敏感性都很低。
+  </div>
+
+  <div class="card-head"><span class="step-no purple">深挖</span><h2>高铁血红蛋白血症：记住"三个不动"</h2></div>
+  <div class="purplebox">
+    <ul>
+      <li><b>SpO₂ 卡 ~85% 不动</b>：常规脉氧仪把 MetHb "平均"成 85% 左右，吸氧、病情变化都不动——读数假，不是病情稳。</li>
+      <li><b>PaO₂ 正常不动</b>：血气里 PaO₂ 反映溶解氧，不低；低的是"能携氧的 Hb"。</li>
+      <li><b>血是巧克力棕色，接触空气不变红</b>：正常静脉血摇匀空气会转红。床旁 30 秒就能做的鉴别动作。</li>
+    </ul>
+    常见诱因：氧化性药物（磺胺、局麻药/苯佐卡因、非那西丁类）、井水/硝酸盐污染。治疗：亚甲蓝（第③页计算器）；G6PD 缺乏禁用。
+  </div>
+
+  <div class="card-head"><span class="step-no cyan">深挖</span><h2>PPHN 的床旁识别</h2></div>
+  <div class="cyanbox">
+    <ul>
+      <li><b>三联线索</b>：产前高危因素（窒息/胎粪吸入/剖宫产无产程/母亲晚孕用药）＋<b>导管前后 SpO₂ 差大</b>＋吸氧不升（高氧试验像"心源"）。</li>
+      <li><b>影像反差</b>：低氧极重而胸片相对轻（"黑肺"、肺血少）。</li>
+      <li><b>高氧高通气试验</b>：纯氧＋手控适度高通气使 PaCO₂ 降到 30–35 mmHg，PPHN 者 PaO₂ 可明显回升（肺血管扩张），真正的结构性心源不升——床旁区分 PPHN vs 心源性分流的经典手法。</li>
+      <li>处理方向：原发病治疗＋氧合/酸碱优化（碱血症扩肺血管）＋iNO（心超评估后），此地只作识别提示。</li>
+    </ul>
+  </div>
+
+  <div class="card-head"><span class="step-no">筛查</span><h2>CCHD 脉氧筛查正式流程（≥24h，无症状足月/近足月）</h2></div>
+  <div class="tscroll"><table>
+    <thead><tr><th style="width:40%">测量（右手＋任一足，安静时）</th><th>判定</th></tr></thead>
+    <tbody>
+      <tr><td>双手足均 <b>≥95%</b> 且差 <b>≤3%</b></td><td><span class="tag green">通过</span></td></tr>
+      <tr><td>任一 90–94%，或差 <b>&gt;3%</b></td><td><span class="tag amber">复查区</span> → 1 小时后复测；仍异常 → 再 1 小时复测一次</td></tr>
+      <tr><td>任一 <b>&lt;90%</b>，或复查仍异常</td><td><span class="tag red">筛查阳性</span> → 心超，按本指南流程处理</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">注：筛查阳性 ≠ 诊断；筛查通过也只覆盖导管依赖型等脉氧可见病变，不排除主动脉缩窄等"不紫"先心——体检股动脉搏动仍是必查项。</div>
+
+  <div class="card-head"><span class="step-no amber">避坑</span><h2>容易被骗的瞬间</h2></div>
+  <div class="amberbox">
+    <ul>
+      <li><b>"手足紫但暖了就好"</b>：先摸股动脉、看灌注再下"良性"结论——休克和左心梗阻型先心的手足紫不是保暖能解决的。</li>
+      <li><b>"监护仪 85% 但孩子看着还行"</b>：MetHb 的 85% 是读数陷阱，抽血气＋看血色。</li>
+      <li><b>"低灌注时 SpO₂ 读数低"</b>：肢端冰凉/灌注差时探头读数不可靠，换导管前右手或耳/额部对照，同步血气。</li>
+      <li><b>"脸青＝青紫"</b>：面部青灰更常提示灌注/贫血/感染，看黏膜定中枢性。</li>
+      <li><b>"TGA 呼吸不费力不像病人"</b>：紫＋呼吸平稳＋起病即重，恰恰是 TGA 的签名，别因"不窘"降级处理。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 页5 依据 ================= -->
+<section class="card page" id="page5">
+
+  <div class="card-head"><h2>📚 指南与共识</h2></div>
+  <div class="ref"><div class="ref-t">基层医疗卫生机构常见新生儿疾病诊疗指南：新生儿复苏（2025年）</div><div class="ref-src">中华医学会儿科学分会新生儿学组 · 中国当代儿科杂志</div><a href="http://www.zgddek.com/CN/10.7499/j.issn.1008-8830.2412161">zgddek.com/CN/10.7499/j.issn.1008-8830.2412161</a></div>
+  <div class="ref"><div class="ref-t">新生儿肺动脉高压诊治专家共识（2023）</div><div class="ref-src">中华儿科杂志</div></div>
+  <div class="ref"><div class="ref-t">基层医疗卫生机构常见新生儿疾病诊疗专家共识：先天性心脏病（2025年）</div><div class="ref-src">中国当代儿科杂志</div><a href="http://www.zgddek.com/CN/10.7499/j.issn.1008-8830.2501004">zgddek.com/CN/10.7499/j.issn.1008-8830.2501004</a></div>
+  <div class="ref"><div class="ref-t">Pulse oximetry screening for critical congenital heart defects: a European consensus statement</div><div class="ref-src">Lancet Child Adolesc Health, 2017</div></div>
+  <div class="ref"><div class="ref-t">新生儿高铁血红蛋白血症研究进展（2023）</div><div class="ref-src">中华医学会围产医学分会</div></div>
+  <div class="ref"><div class="ref-t">Neonatal Resuscitation: 2025 AHA/AAP Guidelines</div><div class="ref-src">Circulation, 2025</div><a href="https://www.ahajournals.org/doi/pdf/10.1161/CIR.0000000000001367">ahajournals.org/doi/pdf/10.1161/CIR.0000000000001367</a></div>
+
+  <div class="card-head"><h2>🔎 关键研究与综述</h2></div>
+  <div class="ref"><div class="ref-t">Pulse oximetry screening for critical congenital heart defects</div><div class="ref-src">Cochrane Database Syst Rev, 2018（系统综述，1a）</div></div>
+  <div class="ref"><div class="ref-t">Evaluation and management of the cyanotic neonate</div><div class="ref-src">PMC, 2007</div></div>
+  <div class="ref"><div class="ref-t">Cyanotic Heart Disease</div><div class="ref-src">StatPearls/NCBI Bookshelf, 2023</div></div>
+  <div class="ref"><div class="ref-t">Persistent Pulmonary Hypertension of the Newborn</div><div class="ref-src">StatPearls/NCBI Bookshelf, 2026</div></div>
+  <div class="ref"><div class="ref-t">Pathophysiology, Management, and Outcome of PPHN: A Clinical Review</div><div class="ref-src">PMC</div></div>
+  <div class="ref"><div class="ref-t">Congenital methemoglobinemia: Rare presentation of cyanosis in newborns</div><div class="ref-src">PMC, 2020</div></div>
+  <div class="ref"><div class="ref-t">Evidence-based guidelines for acute stabilization and management of neonates with PPHN</div><div class="ref-src">PMC, 2025</div></div>
+
+  <div class="card-head"><h2>⚠️ 使用说明</h2></div>
+  <div class="bluebox">
+    <div class="t">口径声明</div>
+    <ul>
+      <li>高氧试验切点采用<b>《新生儿住院医师手册（第六版）》</b>口径（&lt;50 / 50–250 / &gt;250 mmHg）；药物剂量（PGE1、亚甲蓝、部分换血）以手册与药物说明书为准。</li>
+      <li>本页由 AI 参与整理生成，供科内住院医师床旁学习参考，<b>不构成医嘱</b>；所有药物使用前<b>双人核对</b>，临床决策以上级医师意见为准。</li>
+      <li>发现内容与手册/共识冲突时，以手册与共识为准，并请反馈修订。</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="foot">
+  新生儿青紫 · 床旁分诊指南（住院医师版）v1.0 · 2026-09-28 · 单文件离线可用 · 长图模式供微信分享<br>
+  内容骨架整理自科内《新生儿青紫床旁鉴别诊断》笔记，切点以《新生儿住院医师手册（第六版）》校准。
+</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var D = (typeof document !== 'undefined') ? document : null;
+function $(s){ return D.querySelector(s); }
+function val(id){ var el=$(id); return el ? el.value : ''; }
+function num(v){ v=(v||'').trim(); if(v==='') return NaN; var x=parseFloat(v); return isFinite(x)?x:NaN; }
+function fmt(x,d){ if(!isFinite(x)) return '—'; d=(d==null?2:d); return Number(x.toFixed(d)).toString(); }
+
+/* ---------- 纯计算函数（供浏览器与 node 桩测试共用） ---------- */
+function pge1(w,rate,conc){
+  var out={ok:false};
+  if(!(w>0)||!(rate>0)||!(conc>0)) return out;
+  var ugh=w*rate*60;
+  out.ok=true; out.ugh=ugh; out.mlh=ugh/conc; out.day=ugh*24;
+  return out;
+}
+function methylene(w,mgkg){
+  var out={ok:false};
+  if(!(w>0)||!(mgkg>0)) return out;
+  var mg=w*mgkg;
+  out.ok=true; out.mg=mg; out.ml=mg/10; /* 1% = 10 mg/mL */
+  return out;
+}
+function partialExchange(w,hct,target,bv){
+  var out={ok:false};
+  if(!(w>0)||!(hct>target)||!(target>0)||!(bv>0)) return out;
+  var v=bv*w*(hct-target)/hct;
+  out.ok=true; out.ml=v;
+  return out;
+}
+function spO2Verdict(hand,foot){
+  if(!(hand>0&&hand<=100)||!(foot>0&&foot<=100)) return null;
+  var diff=Math.abs(hand-foot), min=Math.min(hand,foot), max=Math.max(hand,foot);
+  var v={diff:diff,min:min,level:'',title:'',body:''};
+  if(min<90){
+    v.level='red'; v.title='自动阳性';
+    v.body='任一部位 <90%。高危：CCHD 或 PPHN → 床旁心超，考虑 PGE1 维持导管；同步血气，呼叫上级。';
+  } else if(min>=95 && diff<=3){
+    v.level='green'; v.title='筛查通过';
+    v.body='双手足 ≥95% 且差 ≤3%。筛查语境通过；但通过不排除主动脉缩窄等"不紫"先心——股动脉搏动仍是必查项。';
+  } else {
+    v.level='amber'; v.title='复查区';
+    v.body='90–94% 或差 >3%：1 小时后复测（筛查语境可复测两次）；若患儿已有症状/青紫明显，不走复查逻辑，直接进下一步（高氧试验 → 心超）。';
+  }
+  if(diff>10){
+    v.level='red';
+    v.title += ' ｜ 差异性青紫';
+    v.body='导管前后差 '+fmt(diff,0)+'% >10% → 导管水平右→左分流：PPHN 或左心梗阻型先心（脚比手紫=缩窄/弓离断）。立即心超＋备 PGE1。';
+  }
+  return v;
+}
+function hyperoxVerdict(pre,post){
+  if(!(post>0)) return null;
+  var v={level:'',title:'',body:''};
+  if(post>250){
+    v.level='green'; v.title='>250 mmHg：支持肺源性';
+    v.body='RDS、TTN、肺炎、MAS、气胸、膈疝等可解释 → 按肺源性诊疗，仍建议心超确认解剖。';
+  } else if(post<=50){
+    v.level='red'; v.title='≤50 mmHg：强烈提示右向左分流';
+    v.body='心源性分流（TGA、肺动脉闭锁、梗阻型 TAPVC）或 PPHN → 心超；红线患者备 PGE1。';
+  } else {
+    v.level='amber'; v.title='50–250 mmHg：中间地带';
+    v.body='不能除外心源：PPHN、重症肺炎合并分流、梗阻型 TAPVC 都落在这里 → 直接心超，别用复测代替。';
+  }
+  if(pre>0 && pre>=60){
+    v.body+='<br>另注：吸空气 PaO₂ '+fmt(pre,0)+' mmHg 并不低而患儿青紫明显 → 警惕高铁血红蛋白血症（SpO₂ 卡 85% 不动、血巧克力色）。';
+  }
+  return v;
+}
+
+/* ---------- 浏览器接线 ---------- */
+if(D){
+  window.__cyan = {pge1:pge1, methylene:methylene, partialExchange:partialExchange, spO2Verdict:spO2Verdict, hyperoxVerdict:hyperoxVerdict};
+
+  window.goPage = function(n){
+    document.body.setAttribute('data-page', String(n));
+    var pages=document.querySelectorAll('section.card.page');
+    for(var i=0;i<pages.length;i++){
+      pages[i].classList.toggle('active', pages[i].id==='page'+n);
+    }
+    var tabs=document.querySelectorAll('nav.pager .ptab');
+    for(var j=0;j<tabs.length;j++){
+      tabs[j].classList.toggle('active', j===n-1);
+    }
+    window.scrollTo({top:0});
+  };
+  window.toggleLong = function(on){
+    document.body.classList.toggle('longmode', !!on);
+    if(on){ document.querySelectorAll('section.card.page').forEach(function(p){p.classList.add('active');}); }
+    else{ window.goPage(parseInt(document.body.getAttribute('data-page')||'1',10)); }
+    window.scrollTo({top:0});
+  };
+
+  function showVerdict(el,v){
+    if(!v){ el.className='verdict'; el.innerHTML=''; return; }
+    el.className='verdict show v-'+v.level;
+    el.innerHTML='<div class="vh">'+v.title+'</div><div>'+v.body+'</div>';
+  }
+  function bindSpO2(){
+    var h=$('#spHand'), f=$('#spFoot'), out=$('#spVerdict');
+    if(!h||!f||!out) return;
+    function run(){
+      showVerdict(out, spO2Verdict(num(h.value), num(f.value)));
+    }
+    h.addEventListener('input',run); f.addEventListener('input',run);
+  }
+  function bindHx(){
+    var p=$('#hxPre'), q=$('#hxPost'), out=$('#hxVerdict');
+    if(!p||!q||!out) return;
+    function run(){ showVerdict(out, hyperoxVerdict(num(p.value), num(q.value))); }
+    p.addEventListener('input',run); q.addEventListener('input',run);
+  }
+  function bindPGE1(){
+    var w=$('#pgW'), r=$('#pgRate'), c=$('#pgConc'), out=$('#pgRes');
+    if(!w||!out) return;
+    function run(){
+      var o=pge1(num(w.value), num(r.value), num(c.value));
+      if(!o.ok){ out.textContent='输入体重后自动计算'; return; }
+      out.innerHTML='剂量 <b>'+fmt(o.ugh)+'</b> μg/h ｜ 泵速 <b>'+fmt(o.mlh)+'</b> mL/h<br>24 h 药量 ≈ '+fmt(o.day,1)+' μg ／ 24 h 液量 ≈ '+fmt(o.mlh*24,1)+' mL（按当前浓度）';
+    }
+    ['input','change'].forEach(function(ev){ w.addEventListener(ev,run); r.addEventListener(ev,run); c.addEventListener(ev,run); });
+    run();
+  }
+  function bindMb(){
+    var w=$('#mbW'), d=$('#mbDose'), out=$('#mbRes');
+    if(!w||!out) return;
+    function run(){
+      var o=methylene(num(w.value), num(d.value));
+      if(!o.ok){ out.textContent='输入体重后自动计算'; return; }
+      out.innerHTML='亚甲蓝 <b>'+fmt(o.mg)+'</b> mg ｜ 1%（10 mg/mL）＝ <b>'+fmt(o.ml,1)+'</b> mL 缓慢静推';
+    }
+    ['input','change'].forEach(function(ev){ w.addEventListener(ev,run); d.addEventListener(ev,run); });
+  }
+  function bindBt(){
+    var w=$('#btW'), h=$('#btHct'), t=$('#btTarget'), bv=$('#btBV'), out=$('#btRes');
+    if(!w||!out) return;
+    function run(){
+      var o=partialExchange(num(w.value), num(h.value), num(t.value), num(bv.value));
+      if(!o.ok){ out.textContent='输入体重与 Hct 后自动计算'; return; }
+      out.innerHTML='换出量 ≈ <b>'+fmt(o.ml,1)+'</b> mL（'+fmt(num(bv.value),0)+' mL/kg × '+fmt(num(w.value),1)+' kg × ('+fmt(num(h.value),0)+'−'+t.value+')/ '+fmt(num(h.value),0)+')<br>等量抽出、等量置换；换后 30–60 min 复测 Hct';
+    }
+    ['input','change'].forEach(function(ev){ [w,h,t,bv].forEach(function(el){el.addEventListener(ev,run);}); });
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+  function init(){ bindSpO2(); bindHx(); bindPGE1(); bindMb(); bindBt(); }
+} else if(typeof module !== 'undefined' && module.exports){
+  module.exports={ pge1:pge1, methylene:methylene, partialExchange:partialExchange, spO2Verdict:spO2Verdict, hyperoxVerdict:hyperoxVerdict };
+}
+})();
+</script>
+</body>
+</html>
